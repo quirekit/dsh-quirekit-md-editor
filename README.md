@@ -29,8 +29,8 @@ DeepSeek Harness previews Markdown in its right sidebar. This plugin makes that 
 Several plugins can edit Markdown in DeepSeek Harness. This one is built around what happens after the agent has written a document: you read it, change it and tell the agent what to fix.
 
 - **Comments are part of the editor.** Threads with replies sit beside the text and follow it as the document changes. Each one can go to the agent and close itself when the work is done.
-- **Your edit is applied to the Markdown text.** The file is not regenerated from a document tree, so a one-character edit is a one-character diff, even with setext headings, `*` and `+` lists, tilde fences, raw HTML or unusual tables. `npm run benchmark:fidelity` checks this in all three modes.
-- **The plugin and the editor are built together.** QuireKit wrote the editor, and everything the plugin needed went into its public API.
+- **Every edit is an edit to the plain Markdown text.** Visual, Markup and Source are one CodeMirror editor that only displays the text differently. The file is not regenerated from a document tree, so a one-character edit is a one-character diff, even with setext headings, `*` and `+` lists, tilde fences, raw HTML or unusual tables. `npm run benchmark:fidelity` checks this in all three modes.
+- **The plugin and the editor are built together.** QuireKit builds the editor on optimized versions of CodeMirror and Lezer, and everything the plugin needed went into its public API.
 
 ## Features
 
@@ -78,7 +78,10 @@ On the DeepSeek Harness Plugins page you can choose the default mode, whether th
 
 ## Performance
 
-These numbers come from the same editor code the plugin runs, in a browser engine with no native rendering layer. The editor parses incrementally and renders only the visible part of the document, so a keystroke in a document ten times longer costs only about a third more. Most of the remaining cost comes from the number of blocks.
+These numbers come from the same editor code the plugin runs, in a browser engine with no native rendering layer. A keystroke in a document ten times longer costs less than a third more, and most of the remaining cost comes from the number of blocks. That comes from QuireKit's work on two open-source cores:
+
+- **An optimized Lezer.** Unchanged groups of the syntax tree are reused whole after an edit, so incremental parsing no longer grows with document length. The editor also skips its second parse pass when link definitions did not change.
+- **An optimized CodeMirror.** On top of drawing only the visible part, it draws further ahead during fast scrolling, and it locks the content height while rebuilding the drawn window so the scroll position stays put.
 
 | Document | Characters | Mode | Open | Update p50 | p90 | p95 | p99 | Next frame p50 | Next frame p95 |
 | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
