@@ -1,0 +1,28 @@
+.qk-dsh-body { position: relative; display: flex; height: 100%; min-height: 0; }
+.qk-dsh-editor { flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; }
+.qk-dsh-frame { display: block; width: 100%; height: 100%; border: 0; }
+.qk-dsh-status { position: absolute; right: 12px; bottom: 10px; z-index: 5; display: flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; font-size: 12px; line-height: 18px; color: #6b7280; background: rgba(127, 127, 127, 0.12); pointer-events: none; }
+.qk-dsh-status[data-status='conflict'] { color: #b45309; background: #fef3c7; pointer-events: auto; }
+.qk-dsh-status[data-status^='failed:'] { color: #b91c1c; background: #fee2e2; }
+.qk-dsh-view-switcher { flex: none; }
+/* DSH's header is 38px; a compact control leaves breathing room around the 36px default. */
+.qk-dsh-view-switcher [role='tablist'] { padding: 2px; }
+.qk-dsh-view-switcher [role='tab'] { height: 24px; padding: 0 10px; font-size: 12px; line-height: 18px; }
+.qk-dsh-view-switcher [role='tablist'] > :not([role='tab']) { top: 2px; left: 2px; width: calc((100% - 4px - 2px * (var(--dsh-segment-count) - 1)) / var(--dsh-segment-count)); height: calc(100% - 4px); }
+.qk-dsh-settings { display: flex; flex-direction: column; gap: 16px; }
+.qk-dsh-setting { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.qk-dsh-setting-title { font-size: 14px; line-height: 20px; }
+.qk-dsh-setting-hint { margin-top: 2px; font-size: 12px; line-height: 18px; opacity: 0.65; }
+.qk-dsh-comment-actions { position: absolute; right: 12px; bottom: 40px; z-index: 5; display: flex; gap: 6px; }
+/* The list button is redundant only while the rail shows every comment. */
+.qk-dsh-editor[data-rails] ~ .qk-dsh-comment-actions .qk-dsh-view-comments[data-all-on-rail='true'] { display: none; }
+/* The editor reports its rail layout on the frame's container; these buttons follow it. */
+.qk-dsh-rail-hide, .qk-dsh-rail-show { display: none; }
+.qk-dsh-editor[data-rail-fits] ~ .qk-dsh-comment-actions .qk-dsh-rail-show { display: inline-block; }
+.qk-dsh-editor[data-comments-side] ~ .qk-dsh-comment-actions .qk-dsh-rail-show { display: none; }
+.qk-dsh-editor[data-comments-side] ~ .qk-dsh-comment-actions .qk-dsh-rail-hide { display: inline-block; }
+.qk-dsh-editor[data-comment-dock] ~ .qk-dsh-comment-actions .qk-dsh-rail-hide { display: none; }
+.qk-dsh-comment-actions button { padding: 4px 10px; border: 1px solid rgba(127, 127, 127, 0.35); border-radius: 6px; font-size: 12px; line-height: 18px; color: inherit; background: var(--qk-color-surface-raised, #fff); cursor: pointer; }
+.qk-dsh-notice { position: absolute; left: 50%; bottom: 10px; z-index: 6; transform: translateX(-50%); padding: 4px 10px; border-radius: 6px; font-size: 12px; line-height: 18px; color: #fff; background: rgba(32, 32, 36, 0.86); }
+.qk-dsh-failure { padding: 24px; font-size: 13px; color: #b91c1c; }
+.qk-dsh-status button { padding: 0 6px; border: 1px solid currentColor; border-radius: 4px; font: inherit; color: inherit; background: transparent; cursor: pointer; }

@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "QuireKit Markdown 编辑器",
+    "description": "在右侧栏直接编辑 Markdown，并自动保存回文件。",
+    "detail": "docs/DETAIL.zh.md"
+  }
+}

@@ -1,0 +1,7 @@
+/* The editor document's own frame: only the layout a host page would otherwise put around the editor. */
+html, body { height: 100%; margin: 0; }
+.qk-dsh-editor, .qk-dsh-editor > .qk-dsh-theme { flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: none; }
+/* The sidebar already frames the document, so the editor draws no frame of its own. */
+.qk-dsh-editor .qk-dsh-theme .md-editor[data-layout] { min-height: 100%; border: 0; border-radius: 0; }
+.qk-dsh-editor .md-editor__toolbar { position: sticky; top: 0; z-index: 4; padding: 0; background: var(--qk-color-surface-page); }
+.qk-dsh-editor .md-editor__toolbar-main .qk-toolbar { border-radius: 0; box-shadow: none; }

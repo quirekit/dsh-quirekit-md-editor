@@ -1,0 +1,4 @@
+# Mounting the host row is what makes DSH discover lib/client.js.
+- insert:
+    - id: quirekit-md-editor
+      name: 'dsh-quirekit-md-editor'

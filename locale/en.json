@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "QuireKit Markdown Editor",
+    "description": "Edit Markdown in place in the right sidebar and save it back to the file.",
+    "detail": "docs/DETAIL.md"
+  }
+}
