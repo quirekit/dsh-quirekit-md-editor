@@ -141,10 +141,10 @@
 | @tanstack/vue-table | 8.21.3 | MIT |
 | @ungap/structured-clone | 1.4.0 | ISC |
 | @upsetjs/venn.js | 2.0.0 | MIT |
-| @vue/reactivity | 3.5.40 | MIT |
-| @vue/runtime-core | 3.5.40 | MIT |
-| @vue/runtime-dom | 3.5.40 | MIT |
-| @vue/shared | 3.5.40 | MIT |
+| @vue/reactivity | 3.5.45 | MIT |
+| @vue/runtime-core | 3.5.45 | MIT |
+| @vue/runtime-dom | 3.5.45 | MIT |
+| @vue/shared | 3.5.45 | MIT |
 | @zag-js/accordion | 1.47.0 | MIT |
 | @zag-js/anatomy | 1.47.0 | MIT |
 | @zag-js/aria-hidden | 1.47.0 | MIT |
@@ -270,7 +270,7 @@
 | devlop | 1.1.0 | MIT |
 | dfa | 1.2.0 | MIT |
 | dom-align | 1.12.4 | MIT |
-| dompurify | 3.4.16 | (MPL-2.0 OR Apache-2.0) |
+| dompurify | 3.4.17 | (MPL-2.0 OR Apache-2.0) |
 | elkjs | 0.9.3 | EPL-2.0 |
 | emojilib | 2.4.0 | MIT |
 | entities | 6.0.1 | BSD-2-Clause |
@@ -372,7 +372,7 @@
 | vfile | 6.0.3 | MIT |
 | vfile-location | 5.0.4 | MIT |
 | vfile-message | 4.0.4 | MIT |
-| vue | 3.5.40 | MIT |
+| vue | 3.5.45 | MIT |
 | w3c-keyname | 2.2.8 | MIT |
 | web-namespaces | 2.0.1 | MIT |
 | xml-naming | 0.3.0 | MIT |
