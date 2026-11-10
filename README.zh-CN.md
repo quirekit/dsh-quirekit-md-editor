@@ -132,6 +132,8 @@ npm install @quirekit/md-editor
 
 接入方式见[接入指南](https://msfe.quirekit.com/guide/md-editor)。QuireKit 还包括这个编辑器底层的源码优先 Markdown 框架 [MSFE](https://msfe.quirekit.com/)、块编辑器，以及在浏览器里排出真实页面的分页编辑器。
 
+开发过程和性能优化的细节，见我写的[这篇文章](https://yishuai.wang/articles/3e7d9243-24bc-4ed0-bd6f-0c20ee8f0e80)。
+
 ## 权限
 
 - 编辑沿用当前会话的沙箱模式，只读会话中文档也是只读的。
