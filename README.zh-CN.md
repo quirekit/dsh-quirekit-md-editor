@@ -138,6 +138,7 @@ npm install @quirekit/md-editor
 - 粘贴图片只支持本地工作区，因为 DeepSeek Harness 的文件服务目前只能写文本。
 - 编辑器约 36 MB（gzip 后约 11 MB），只在打开 Markdown 文件时加载。
 - 编辑器运行在 iframe 中：焦点在编辑器内时收不到 DeepSeek Harness 的全局快捷键，菜单也不会超出右侧栏。
+- 和 dsh-marktext、dsh-better-sidebar 同时启用时，`.md` 默认用本编辑器打开。
 - 尚未在 DeepSeek Harness 桌面版上验证。
 
 ## 开发

@@ -138,6 +138,7 @@ See the [integration guide](https://msfe.quirekit.com/en/guide/md-editor). Quire
 - Pasting images needs a local workspace, because the DeepSeek Harness file service can currently only write text.
 - The editor is about 36 MB (about 11 MB gzipped) and loads only when a Markdown file is opened.
 - The editor runs in an iframe: DeepSeek Harness keyboard shortcuts don't reach it while it has focus, and its menus stay inside the sidebar.
+- With dsh-marktext and dsh-better-sidebar also enabled, `.md` files open in this editor by default.
 - Not yet verified on the DeepSeek Harness desktop app.
 
 ## Development
