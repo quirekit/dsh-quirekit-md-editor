@@ -5,11 +5,11 @@
  */
 import { build } from 'esbuild';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
-import { bundleOptions, usesLocalQuireKit } from './scripts/bundle-options.mjs';
+import { bundleOptions, splitBundleOptions, usesLocalQuireKit } from './scripts/bundle-options.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
@@ -21,20 +21,23 @@ rmSync(scratch, { recursive: true, force: true });
 rmSync(frameDirectory, { recursive: true, force: true });
 mkdirSync(frameDirectory, { recursive: true });
 
-// The editor runs in its own document, so the host page's stylesheets never restyle it.
+// The editor runs in its own document, so the host page's stylesheets never restyle it. ES module chunks
+// keep the formula fonts, whiteboard and diagram engines out of the first load until a document uses them.
 const frame = await build({
-  ...bundleOptions,
-  entryPoints: ['src/client/frame-entry.js'],
-  outfile: join(frameDirectory, 'editor.js'),
-  format: 'iife',
+  ...splitBundleOptions(frameDirectory),
+  entryPoints: { editor: 'src/client/frame-entry.js' },
   metafile: true,
 });
+// editor.css already holds the rules of every chunk; the per-chunk stylesheets are never linked.
+for (const file of readdirSync(frameDirectory)) if (file.endsWith('.css') && file !== 'editor.css') rmSync(join(frameDirectory, file));
 // The frame is as wide as the sidebar, so the phone breakpoint would otherwise apply on a desktop window.
 const frameCss = join(frameDirectory, 'editor.css');
 writeFileSync(frameCss, readFileSync(frameCss, 'utf8').replaceAll('(max-width:767px)', '(max-width:0px)'));
-writeFileSync(join(frameDirectory, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="editor.css"><script src="editor.js"></script></head><body><div id="root" class="qk-dsh-editor"></div></body></html>\n');
-const frameBytes = readFileSync(join(frameDirectory, 'editor.js'));
-const frameVersion = createHash('sha256').update(frameBytes).update(readFileSync(join(frameDirectory, 'editor.css'))).digest('hex').slice(0, 16);
+writeFileSync(join(frameDirectory, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="editor.css"><script type="module" src="editor.js"></script></head><body><div id="root" class="qk-dsh-editor"></div></body></html>\n');
+const frameFiles = readdirSync(frameDirectory).sort();
+const frameHash = createHash('sha256');
+for (const file of frameFiles) frameHash.update(file).update(readFileSync(join(frameDirectory, file)));
+const frameVersion = frameHash.digest('hex').slice(0, 16);
 
 const result = await build({
   ...bundleOptions,
@@ -80,15 +83,30 @@ ${[...new Set(rows)].join('\n')}
 
 const size = text => `${(Buffer.byteLength(text) / 1048576).toFixed(2)} MB (gzip ${(gzipSync(text).length / 1048576).toFixed(2)} MB)`;
 console.log(`client.js  ${size(wrapped)}`);
-console.log(`editor.js  ${size(frameBytes)}`);
 console.log(`  js  ${size(script)}`);
 console.log(`  css ${size(css)}`);
 
+// First load: the entry and the chunks it imports statically; everything else waits for an import().
+const outputs = frame.metafile.outputs;
+const entry = Object.keys(outputs).find(file => outputs[file].entryPoint === 'src/client/frame-entry.js');
+const initial = new Set();
+for (const pending = [entry]; pending.length > 0;) {
+  const file = pending.pop();
+  if (initial.has(file)) continue;
+  initial.add(file);
+  for (const item of outputs[file].imports) if (item.kind === 'import-statement') pending.push(item.path);
+}
+const joined = files => Buffer.concat(files.map(file => readFileSync(join(root, file))));
+console.log(`frame      ${frameFiles.length} files, ${size(joined(frameFiles.filter(file => !file.endsWith('.html')).map(file => relative(root, join(frameDirectory, file)))))}`);
+console.log(`  first load  ${size(joined([...initial, entry.replace(/\.js$/, '.css')]))}`);
+
 const groups = new Map();
-for (const [file, entry] of Object.entries(Object.values(frame.metafile.outputs).find(o => o.entryPoint)?.inputs ?? {})) {
-  const match = file.match(/node_modules\/((?:@[^/]+\/)?[^/]+)(?!.*node_modules\/)/);
-  const key = match?.[1] ?? 'src';
-  groups.set(key, (groups.get(key) ?? 0) + entry.bytesInOutput);
+for (const file of initial) {
+  for (const [input, item] of Object.entries(outputs[file].inputs)) {
+    const match = input.match(/node_modules\/((?:@[^/]+\/)?[^/]+)(?!.*node_modules\/)/);
+    const key = match?.[1] ?? 'src';
+    groups.set(key, (groups.get(key) ?? 0) + item.bytesInOutput);
+  }
 }
 for (const [key, bytes] of [...groups].sort((a, b) => b[1] - a[1]).slice(0, 18)) {
   console.log(`  ${(bytes / 1024).toFixed(0).padStart(6)} KB  ${key}`);

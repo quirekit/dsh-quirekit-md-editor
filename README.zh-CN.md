@@ -146,7 +146,7 @@ npm install @quirekit/md-editor
 - 单个文件上限 4 MB，单张图片上限 20 MB。
 - 同一文件混用 LF 和 CRLF 时不能编辑，请先统一换行符或切回 Markdown 预览。
 - 粘贴图片只支持本地工作区，因为 DeepSeek Harness 的文件服务目前只能写文本。
-- 编辑器约 36 MB（gzip 后约 11 MB），只在打开 Markdown 文件时加载。
+- 打开 Markdown 文件时加载约 5.8 MB 的编辑器代码和样式（gzip 后约 1.8 MB）。公式编辑器、白板和图表引擎只在文档用到时才加载。安装包约 38 MB。
 - 编辑器运行在 iframe 中：焦点在编辑器内时收不到 DeepSeek Harness 的全局快捷键，菜单也不会超出右侧栏。
 - 和 dsh-marktext、dsh-better-sidebar 同时启用时，`.md` 默认用本编辑器打开。
 ## 开发

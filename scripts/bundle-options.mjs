@@ -1,5 +1,6 @@
 /** esbuild settings shared by the plugin build and the benchmark page. */
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,28 +20,36 @@ function rewriteAsset(path, expression, replacement, loader = 'js') {
   return { contents: source.replace(expression, () => replacement), loader };
 }
 
-/** A DSH plugin is one script, so sibling assets referenced through import.meta.url travel inside it. */
-const embedModuleAssets = {
-  name: 'embed-module-assets',
+/**
+ * Turns the diagram engine bundle into the URL expression the text-diagram module fetches it from.
+ * @callback EngineReference
+ * @param {string} file - absolute path of the engine bundle.
+ * @returns {string} URL expression.
+ */
+
+/** @type {EngineReference} Single-file bundles carry the engine inside, as a blob URL. */
+const inlineEngine = file => `new URL(URL.createObjectURL(new Blob([${JSON.stringify(readFileSync(file, 'utf8'))}], { type: "text/javascript" })))`;
+
+/**
+ * Sibling assets referenced through import.meta.url, which esbuild does not copy.
+ * @param {EngineReference} engineReference - where the diagram engine comes from.
+ * @returns {import('esbuild').Plugin} the plugin.
+ */
+const moduleAssets = engineReference => ({
+  name: 'module-assets',
   /** @param {import('esbuild').PluginBuild} context - esbuild plugin context. */
   setup(context) {
-    context.onLoad({ filter: /text-diagram\/dist\/browser\.mjs$/ }, (args) => {
-      const engine = readFileSync(join(dirname(args.path), 'diagram-frame.iife.js'), 'utf8');
-      return rewriteAsset(
-        args.path,
-        'new URL("./diagram-frame.iife.js", import.meta.url)',
-        `new URL(URL.createObjectURL(new Blob([${JSON.stringify(engine)}], { type: "text/javascript" })))`,
-      );
-    });
-    context.onLoad({ filter: /text-diagram\/src\/browser\/isolated\.ts$/ }, (args) => {
-      const engine = readFileSync(join(dirname(args.path), '..', '..', 'dist', 'diagram-frame.iife.js'), 'utf8');
-      return rewriteAsset(
-        args.path,
-        'new URL("../../dist/diagram-frame.iife.js", import.meta.url)',
-        `new URL(URL.createObjectURL(new Blob([${JSON.stringify(engine)}], { type: "text/javascript" })))`,
-        'ts',
-      );
-    });
+    context.onLoad({ filter: /text-diagram\/dist\/browser\.mjs$/ }, args => rewriteAsset(
+      args.path,
+      'new URL("./diagram-frame.iife.js", import.meta.url)',
+      engineReference(join(dirname(args.path), 'diagram-frame.iife.js')),
+    ));
+    context.onLoad({ filter: /text-diagram\/src\/browser\/isolated\.ts$/ }, args => rewriteAsset(
+      args.path,
+      'new URL("../../dist/diagram-frame.iife.js", import.meta.url)',
+      engineReference(join(dirname(args.path), '..', '..', 'dist', 'diagram-frame.iife.js')),
+      'ts',
+    ));
     context.onLoad({ filter: /pdfkit\/js\/pdfkit\.browser\.mjs$/ }, (args) => {
       const profile = readFileSync(join(dirname(args.path), 'data', 'sRGB_IEC61966_2_1.icc')).toString('base64');
       return rewriteAsset(
@@ -50,7 +59,7 @@ const embedModuleAssets = {
       );
     });
   },
-};
+});
 
 /** A QuireKit checkout to build against, to try unreleased editor changes before publishing. */
 const LOCAL_QUIREKIT = process.env.QUIREKIT_LOCAL;
@@ -91,7 +100,7 @@ const dynamicPlatformImports = {
 
 /** Settings for bundling the editor; each build adds its own entry and output. */
 export const bundleOptions = {
-  plugins: [...localPlugins, dynamicPlatformImports, embedModuleAssets],
+  plugins: [...localPlugins, dynamicPlatformImports, moduleAssets(inlineEngine)],
   absWorkingDir: root,
   bundle: true,
   platform: 'browser',
@@ -110,6 +119,30 @@ export const bundleOptions = {
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
   },
 };
+
+/**
+ * Settings for an ES module build split into chunks that load on demand, all written to one directory.
+ * @param {string} directory - output directory, which also receives the diagram engine as its own file.
+ * @returns {import('esbuild').BuildOptions} build settings without an entry.
+ */
+export function splitBundleOptions(directory) {
+  /** @type {EngineReference} The engine is fetched from beside the chunks only when a diagram renders. */
+  const emitEngine = (file) => {
+    const bytes = readFileSync(file);
+    const name = `diagram-engine-${createHash('sha256').update(bytes).digest('hex').slice(0, 16)}.js`;
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(join(directory, name), bytes);
+    return `new URL(${JSON.stringify(`./${name}`)}, import.meta.url)`;
+  };
+  return {
+    ...bundleOptions,
+    plugins: [...localPlugins, dynamicPlatformImports, moduleAssets(emitEngine)],
+    outdir: directory,
+    format: 'esm',
+    splitting: true,
+    chunkNames: 'chunk-[hash]',
+  };
+}
 
 /** Whether this build uses a QuireKit checkout instead of the published packages. */
 export const usesLocalQuireKit = LOCAL_QUIREKIT !== undefined;

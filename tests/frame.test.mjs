@@ -35,8 +35,19 @@ test('serves the editor files under a versioned path', async (t) => {
   assert.equal(String(page.body), '<!doctype html>');
 });
 
-test('answers nothing but the listed files', async () => {
-  for (const url of ['/dsh-quirekit-md-editor/frame/abc/client.js', '/dsh-quirekit-md-editor/frame/abc/..%2F..%2Fpackage.json', '/dsh-quirekit-md-editor/frame/abc/constructor']) {
+test('serves the chunks the editor imports on demand', async (t) => {
+  mkdirSync(frameDirectory, { recursive: true });
+  const chunk = join(frameDirectory, 'chunk-TEST0000.js');
+  t.after(() => rmSync(chunk, { force: true }));
+  writeFileSync(chunk, 'export {};');
+  const sent = await request('/dsh-quirekit-md-editor/frame/abc123/chunk-TEST0000.js');
+  assert.equal(sent.status, 200);
+  assert.match(sent.headers['content-type'], /text\/javascript/);
+  assert.equal(String(sent.body), 'export {};');
+});
+
+test('answers nothing but plain files in the frame directory', async () => {
+  for (const url of ['/dsh-quirekit-md-editor/frame/abc/client.js', '/dsh-quirekit-md-editor/frame/abc/..%2F..%2Fpackage.json', '/dsh-quirekit-md-editor/frame/abc/constructor', '/dsh-quirekit-md-editor/frame/abc/chunk-MISSING.js', '/dsh-quirekit-md-editor/frame/abc/.hidden.js']) {
     assert.equal((await request(url)).status, 404, url);
   }
   assert.equal((await request('/dsh-quirekit-md-editor/frame/abc/index.html', 'POST')).status, 404);
