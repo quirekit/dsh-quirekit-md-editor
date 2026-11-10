@@ -338,12 +338,15 @@
 | points-on-curve | 1.0.1 | MIT |
 | points-on-path | 0.2.1 | MIT |
 | property-information | 7.2.0 | MIT |
+| react | 18.3.1 | MIT |
+| react-dom | 18.3.1 | MIT |
 | react-remove-scroll | 2.7.2 | MIT |
 | react-remove-scroll-bar | 2.3.8 | MIT |
 | react-style-singleton | 2.2.3 | MIT |
 | restructure | 3.0.2 | MIT |
 | roughjs | 4.6.4 | MIT |
 | roughjs | 4.6.6 | MIT |
+| scheduler | 0.23.2 | MIT |
 | simple-mind-map | 0.14.0-fix.3 | MIT |
 | skin-tone | 2.0.0 | MIT |
 | sliced | 1.0.1 | MIT |

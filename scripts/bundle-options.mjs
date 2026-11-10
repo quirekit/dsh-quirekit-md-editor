@@ -1,6 +1,7 @@
 /** esbuild settings shared by the plugin build and the benchmark page. */
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -120,6 +121,32 @@ export const bundleOptions = {
   },
 };
 
+/** CommonJS packages that the whiteboard imports dynamically and then reads named exports from. */
+const DYNAMIC_COMMONJS = /^(react|react-dom\/client)$/;
+
+/**
+ * A split chunk exposes only the default export of a CommonJS module, so a dynamic import of one of
+ * these packages goes through a module that also re-exports its named members.
+ */
+const dynamicCommonJsExports = {
+  name: 'dynamic-commonjs-exports',
+  /** @param {import('esbuild').PluginBuild} context - esbuild plugin context. */
+  setup(context) {
+    const require = createRequire(join(root, 'package.json'));
+    context.onResolve({ filter: DYNAMIC_COMMONJS }, args => (
+      args.kind === 'dynamic-import' ? { path: args.path, namespace: 'dynamic-commonjs' } : undefined
+    ));
+    context.onLoad({ filter: /.*/, namespace: 'dynamic-commonjs' }, (args) => {
+      const names = Object.keys(require(args.path)).filter(name => name !== 'default' && /^[A-Za-z_$][\w$]*$/u.test(name));
+      return {
+        contents: `import module from ${JSON.stringify(args.path)};\nexport default module;\nexport const { ${names.join(', ')} } = module;\n`,
+        loader: 'js',
+        resolveDir: root,
+      };
+    });
+  },
+};
+
 /**
  * Settings for an ES module build split into chunks that load on demand, all written to one directory.
  * @param {string} directory - output directory, which also receives the diagram engine as its own file.
@@ -136,7 +163,9 @@ export function splitBundleOptions(directory) {
   };
   return {
     ...bundleOptions,
-    plugins: [...localPlugins, dynamicPlatformImports, moduleAssets(emitEngine)],
+    // The editor document has no platform require, so React for the whiteboard is bundled with it.
+    plugins: [...localPlugins, dynamicCommonJsExports, moduleAssets(emitEngine)],
+    external: [],
     outdir: directory,
     format: 'esm',
     splitting: true,
