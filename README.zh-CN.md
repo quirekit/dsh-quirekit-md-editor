@@ -22,7 +22,7 @@ DeepSeek Harness 的右侧栏可以预览 Markdown，这个插件让预览可以
 - **长文档依然跟手。** 在 100 万字符的文档中，一次按键更新编辑器的中位耗时是 2.4 ms，P95 是 3.0 ms，详见[性能](#性能)。
 - **文件还是你的文件。** 保存的仍是纯 Markdown，只改动你编辑的地方，其余内容逐字节不变。评论单独存放。
 
-<p align="center"><img src="./.github/assets/agent-resolved.png" alt="DeepSeek Harness 左侧是 Agent 的处理结果，右侧是修改后的文档，两条评论都已标记为解决" width="820"></p>
+<p align="center"><img src="./.github/assets/comment-to-agent.gif" alt="在 DeepSeek Harness 桌面版里写两条评论，一起交给 Agent，10 秒后改完，两条评论自动标记为已解决" width="820"></p>
 
 ## 为什么是这个编辑器
 
@@ -31,6 +31,12 @@ DeepSeek Harness 里已经有几个能编辑 Markdown 的插件。这个插件�
 - **评论是编辑器的一部分。** 评论和回复显示在正文旁边，并跟随文字移动。每条评论都能发给 Agent，处理完自动关闭。
 - **每一次编辑都是在改 Markdown 纯文本。** 可视、标记、源码三种模式是同一个 CodeMirror 编辑器，区别只在显示方式。文件不会从文档树重新生成，改一个字符，diff 就只有一个字符。即使文档里有 Setext 标题、`*` 和 `+` 列表、波浪线代码块、原始 HTML 或不规整的表格也一样。`npm run benchmark:fidelity` 会在三种模式下验证这一点。
 - **插件和编辑器一起打磨。** 编辑器由 QuireKit 基于优化过的 CodeMirror 和 Lezer 构建，插件需要的能力都进入了它的公开接口。
+
+## 演示
+
+在 DeepSeek Harness 桌面版里：选中文字发给 Agent、评论交给 Agent 并自动解决、一句话改成图文并茂，以及评论在各模式下的显示。部分片段已加速，画面中有标注。
+
+https://github.com/user-attachments/assets/4906fb2c-3149-4ae0-87da-ee97b3e9a9ac
 
 ## 功能
 

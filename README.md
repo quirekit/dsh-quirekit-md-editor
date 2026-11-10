@@ -22,7 +22,7 @@ DeepSeek Harness previews Markdown in its right sidebar. This plugin makes that 
 - **Fast on long documents.** In a 1,000,000-character document, a keystroke updates the editor in 2.4 ms at the median and 3.0 ms at p95. See [Performance](#performance).
 - **Your file stays yours.** It is still plain Markdown. Only what you edit changes, and the rest stays byte-for-byte identical. Comments live in a separate file.
 
-<p align="center"><img src="./.github/assets/agent-resolved.png" alt="DeepSeek Harness with the agent's report on the left and the edited document on the right, where both comments are marked resolved" width="820"></p>
+<p align="center"><img src="./.github/assets/comment-to-agent.gif" alt="Two comments written in the DeepSeek Harness desktop app and handed to the agent together; ten seconds later the edits are made and both comments are marked resolved" width="820"></p>
 
 ## Why this editor
 
@@ -31,6 +31,12 @@ Several plugins can edit Markdown in DeepSeek Harness. This one is built around 
 - **Comments are part of the editor.** Threads with replies sit beside the text and follow it as the document changes. Each one can go to the agent and close itself when the work is done.
 - **Every edit is an edit to the plain Markdown text.** Visual, Markup and Source are one CodeMirror editor that only displays the text differently. The file is not regenerated from a document tree, so a one-character edit is a one-character diff, even with setext headings, `*` and `+` lists, tilde fences, raw HTML or unusual tables. `npm run benchmark:fidelity` checks this in all three modes.
 - **The plugin and the editor are built together.** QuireKit builds the editor on optimized versions of CodeMirror and Lezer, and everything the plugin needed went into its public API.
+
+## Demo
+
+In the DeepSeek Harness desktop app: sending a selection to the agent, handing comments over and watching them resolve, turning a plain document into one with diagrams, and comments across the editing modes. Some parts are sped up, as labelled on screen.
+
+https://github.com/user-attachments/assets/4906fb2c-3149-4ae0-87da-ee97b3e9a9ac
 
 ## Features
 
