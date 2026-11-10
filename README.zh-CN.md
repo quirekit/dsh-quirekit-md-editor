@@ -56,13 +56,15 @@ DeepSeek Harness 里已经有几个能编辑 Markdown 的插件。这个插件�
 
 ## 安装
 
-需要 DeepSeek Harness `>=0.2.2-rc.1 <0.3.0` 的 Web 版。
+需要 DeepSeek Harness `>=0.2.2-rc.1 <0.3.0`，Web 版和桌面版都可以。
 
 ```bash
 dsh plugin --profile web add dsh-quirekit-md-editor
 ```
 
 重启 `dsh web`，再从“文件”标签打开 Markdown。
+
+桌面版在“插件”页点“添加插件”，输入 `dsh-quirekit-md-editor` 安装并启用。
 
 从源码安装：
 
@@ -139,8 +141,6 @@ npm install @quirekit/md-editor
 - 编辑器约 36 MB（gzip 后约 11 MB），只在打开 Markdown 文件时加载。
 - 编辑器运行在 iframe 中：焦点在编辑器内时收不到 DeepSeek Harness 的全局快捷键，菜单也不会超出右侧栏。
 - 和 dsh-marktext、dsh-better-sidebar 同时启用时，`.md` 默认用本编辑器打开。
-- 尚未在 DeepSeek Harness 桌面版上验证。
-
 ## 开发
 
 ```bash

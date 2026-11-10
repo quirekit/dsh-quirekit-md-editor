@@ -56,13 +56,15 @@ The comment rail can be hidden and shown at any time, and the toolbar menu switc
 
 ## Installation
 
-Requires the DeepSeek Harness Web UI, `>=0.2.2-rc.1 <0.3.0`.
+Requires DeepSeek Harness `>=0.2.2-rc.1 <0.3.0`, on the web or desktop.
 
 ```bash
 dsh plugin --profile web add dsh-quirekit-md-editor
 ```
 
 Restart `dsh web`, then open a Markdown file from the Files tab.
+
+On desktop, open the Plugins page, choose Add plugin, enter `dsh-quirekit-md-editor`, then enable it.
 
 To install from source:
 
@@ -139,8 +141,6 @@ See the [integration guide](https://msfe.quirekit.com/en/guide/md-editor). Quire
 - The editor is about 36 MB (about 11 MB gzipped) and loads only when a Markdown file is opened.
 - The editor runs in an iframe: DeepSeek Harness keyboard shortcuts don't reach it while it has focus, and its menus stay inside the sidebar.
 - With dsh-marktext and dsh-better-sidebar also enabled, `.md` files open in this editor by default.
-- Not yet verified on the DeepSeek Harness desktop app.
-
 ## Development
 
 ```bash
