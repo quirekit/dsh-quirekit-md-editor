@@ -34,9 +34,9 @@ Several plugins can edit Markdown in DeepSeek Harness. This one is built around 
 
 ## Demo
 
-In the DeepSeek Harness desktop app: sending a selection to the agent, handing comments over and watching them resolve, turning a plain document into one with diagrams, and comments across the editing modes. Some parts are sped up, as labelled on screen.
+In the DeepSeek Harness desktop app: sending a selection to the agent, handing comments over and watching them resolve, and turning a plain document into one with diagrams; then the same Markdown in the built-in DeepSeek Harness preview, the three editing modes side by side, and comments across those modes. Some parts are sped up, as labelled on screen.
 
-https://github.com/user-attachments/assets/4906fb2c-3149-4ae0-87da-ee97b3e9a9ac
+https://github.com/user-attachments/assets/fadc2a40-9e9d-4124-9d1a-ece760a4b7ab
 
 ## Features
 

@@ -34,9 +34,9 @@ DeepSeek Harness 里已经有几个能编辑 Markdown 的插件。这个插件�
 
 ## 演示
 
-在 DeepSeek Harness 桌面版里：选中文字发给 Agent、评论交给 Agent 并自动解决、一句话改成图文并茂，以及评论在各模式下的显示。部分片段已加速，画面中有标注。
+在 DeepSeek Harness 桌面版里：选中文字发给 Agent、评论交给 Agent 并自动解决、一句话改成图文并茂；再切到 DSH 自带的预览看同一份 Markdown，对比三种编辑模式，以及评论在各模式下的显示。部分片段已加速，画面中有标注。
 
-https://github.com/user-attachments/assets/4906fb2c-3149-4ae0-87da-ee97b3e9a9ac
+https://github.com/user-attachments/assets/fadc2a40-9e9d-4124-9d1a-ece760a4b7ab
 
 ## 功能
 
