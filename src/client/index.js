@@ -1,5 +1,7 @@
 /** Browser half: registers the editable renderer ahead of the shipped Markdown preview. */
 import { createElement } from 'react';
+import { MarkdownClaimBody } from './claim-body.jsx';
+import { CLAIM_ID, MARKDOWN_EXTENSIONS, previewKind, probeAddress, watchClaim } from './claim.js';
 import { EditorSettings, ViewSwitcher } from './controls.jsx';
 import { EditorBoundary, MarkdownEditorBody } from './body.jsx';
 import { en, zh } from './locale.js';
@@ -41,6 +43,23 @@ function createComposerBridge(ctx) {
 }
 
 /**
+ * Build the action that hands one claimed Markdown tab to the built-in preview tab.
+ * @param {any} ctx - Cordis client context.
+ * @returns {(tab: any) => void} the hand-off; throws when the preview is unavailable.
+ */
+function createHandOff(ctx) {
+  return (tab) => {
+    const kind = previewKind(ctx.get('sidebarRightTabs')?.entries() ?? []);
+    const sidebar = ctx.get('sidebarRight');
+    if (kind === undefined || sidebar === undefined) throw new Error('the built-in document preview is not registered');
+    // The tab action drops a named `kind` and re-ranks the address instead,
+    // which would claim this very tab again, so the hand-off goes through the
+    // controller, where naming the kind skips the ranking.
+    sidebar.openResource(tab.contentId, { kind, replaceTab: tab.id, params: tab.navigation.params });
+  };
+}
+
+/**
  * Register the renderer metadata and its document body for the plugin lifetime.
  * @param {any} ctx - Cordis client context.
  */
@@ -49,7 +68,7 @@ export function apply(ctx) {
   const t = ctx.locale.bind(LOCALE);
   ctx.effect(() => ctx.documentPreviews.register({
     id: RENDERER_ID,
-    extensions: ['md', 'markdown'],
+    extensions: MARKDOWN_EXTENSIONS,
     priority: 'extension',
     title: () => t('title'),
     // The editor needs the whole file and the version token that guards its saves.
@@ -67,4 +86,22 @@ export function apply(ctx) {
     { name: 'plugins.bundle.config', key: PACKAGE_NAME, locale: LOCALE },
     EditorSettings,
   )), 'quirekit-md-editor: settings');
+  ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register(
+    {
+      name: 'sidebar.right.pane.tab',
+      key: CLAIM_ID,
+      inject: () => ({ handOff: createHandOff(ctx) }),
+    },
+    MarkdownClaimBody,
+  )), 'quirekit-md-editor: markdown claim body');
+
+  // Another plugin that claims file addresses (a Better Sidebar editor, a Mark
+  // Text editor) outranks the built-in preview tab, and this editor lives inside
+  // that tab. While such a competitor is registered, claim Markdown files with a
+  // longer address pattern and hand them to the preview tab; with no competitor
+  // the claim stays out of the way. See claim.js.
+  ctx.inject(['sidebarRightTabs'], scope => watchClaim({
+    tabs: scope.get('sidebarRightTabs'),
+    probe: () => probeAddress(ctx.sessions.list.getSnapshot().ids),
+  }));
 }
